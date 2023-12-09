@@ -1,0 +1,37 @@
+[global]
+fps   = 120
+tps   = 60
+title = "Project_1"
+native_resolution = [1280, 720]
+scale = 2
+
+[graphics]
+shaders = [
+    "assets\\shaders"
+]
+
+[sprites]
+spritesheets = [
+    "assets\\sprites"
+]
+backgrounds = [
+    "assets\\backgrounds"
+]
+
+[levels]
+levels = [
+    "assets\\levels"
+]
+
+[player]
+x_speed = [-2.5,2.5]
+y_speed = [-2.5,2.5]
+
+[camera]
+view_distance = [500, 100]
+camera_type   = "abstract"
+x_speed_max  = 1
+y_speed_max  = 1
+x_accel_rate = 0.001
+y_accel_rate = 0.001
+lerp_factor  = 0.02
