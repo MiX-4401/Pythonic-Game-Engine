@@ -17,6 +17,7 @@ class EngineMain:
         self.delta_time: float = 0.00; self.last_time: float = time()
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.current_resolution, pygame.DOUBLEBUF | pygame.OPENGL | pygame.RESIZABLE | pygame.SRCALPHA)
+        self.normal_screen = pygame.Surface(self.current_resolution, pygame.SRCALPHA)
         self.ctx: mgl.Context = mgl.create_context()
         pygame.display.set_caption(self.global_settings["title"])
 
@@ -55,6 +56,7 @@ class EngineMain:
 
     def draw(self):
         self.screen.fill(color=(0, 0, 0))
+        self.normal_screen.fill(color=(0,0,0))
         
         pygame.display.flip()
 
@@ -116,6 +118,7 @@ class EngineMain:
     def d_draw(cls, func):
         def inner(self, *args, **kwargs):
             self.screen.fill(color=(0, 0, 0))
+            self.normal_screen.fill(color=(0, 0, 0))
 
             result = func(self, *args, **kwargs)
 

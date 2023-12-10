@@ -6,4 +6,5 @@ class Graphics(EngineGraphics):
 
     @EngineGraphics.d_draw
     def draw(self):
-        self.main.renderer.draw(frame=self.main.screen)
+        self.main.renderer.draw(frame=self.main.screen, location="surfaces")
+        self.main.renderer.draw(frame=self.main.normal_screen, location="normals")
