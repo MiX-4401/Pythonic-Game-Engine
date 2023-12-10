@@ -2,19 +2,22 @@ import pygame
 
 
 class EnginePlayer():
-    def __init__(self, main, surfaces:list, properties:dict, polygons=list, pos=list, name=str, settings:dict={}):
+    def __init__(self, main, surfaces:list, normals:list, properties:dict, polygons=list, pos=list, name=str, settings:dict={}):
         self.main = main
         self.settings:   dict = settings
         self.surfaces:   list = surfaces
+        self.normals:    list = normals
         self.properties: dict = properties
         self.polygons:   list = polygons
         self.pos:        list = pos
         self.name:       list = name
 
+
         self.is_animating:   bool  = False 
         self.current_sprite: int   = 0
         self.sprite_inc:     float = 0
-        self.image: pygame.Surface = self.surfaces[self.current_sprite]
+        #self.image: pygame.Surface = self.surfaces[self.current_sprite]
+        self.image: pygame.Surface = self.surfaces[0][0]
 
         self.x_speed: list = self.main.settings["player"]["x_speed"]
         self.y_speed: list = self.main.settings["player"]["y_speed"]

@@ -72,7 +72,6 @@ class EngineTiles():
         return tiles
 
     def get_surface(self, sheetname:str, key:str):
-        print(sheetname, key)
         return self.main.sprites.sprites[sheetname][key][0], self.main.sprites.sprites[sheetname][key][1]
         
     def load_tiles(self):
@@ -151,4 +150,4 @@ class EngineBasicTile():
             self.image = self.surfaces[int(self.current_sprite)]
 
     def draw(self, surface:pygame.Surface):
-        surface.blit(source=self.normals[0], dest=self.pos)
+        surface.blit(source=self.surfaces[0], dest=self.pos)
