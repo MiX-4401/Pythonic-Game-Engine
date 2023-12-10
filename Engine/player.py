@@ -12,12 +12,10 @@ class EnginePlayer():
         self.pos:        list = pos
         self.name:       list = name
 
-
         self.is_animating:   bool  = False 
         self.current_sprite: int   = 0
         self.sprite_inc:     float = 0
-        #self.image: pygame.Surface = self.surfaces[self.current_sprite]
-        self.image: pygame.Surface = self.surfaces[0][0]
+        self.image: pygame.Surface = self.surfaces[self.current_sprite]
 
         self.x_speed: list = self.main.settings["player"]["x_speed"]
         self.y_speed: list = self.main.settings["player"]["y_speed"]

@@ -34,7 +34,7 @@ class Level(EngineLevel):
             object:      Ball = Ball(main=self.main, normals=normals, surfaces=surfaces, properties=properties, polygons=polygons, pos=[pos[0], pos[1]-tilesize[1]], name=name)
         if type == "player":
             spritesheet: list = [x for x in self.main.sprites.sprites["player"].values()]
-            surfaces:    list = [x for x in spritesheet[1::]]
+            surfaces:    list = [x[0] for x in spritesheet[1::]]
             normals:     list = [x[1] for x in spritesheet[1::]]
             object:      Player = Player(main=self.main, normals=normals, surfaces=surfaces, properties=properties, polygons=polygons, pos=[pos[0], pos[1]-tilesize[1]*2], name=name)
     
