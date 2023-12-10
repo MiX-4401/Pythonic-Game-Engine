@@ -5,6 +5,7 @@ from Engine.functions import scale_surface
 
 class EngineSprites():
 
+    normal_colour: tuple = (50.2, 50.2, 100)
     def __init__(self, main, settings:dict={}):
         self.main = main
         self.settings: dict = settings
@@ -30,7 +31,8 @@ class EngineSprites():
         for path in spritesheet_paths:
             spritesheet_name: str = os.path.basename(path).split(".")[0]
 
-            tilesize: tuple  = self.scan_spritesheet(path=path)
+            tilesize: tuple; normal_index: tuple
+            tilesize, normal_index  = self.scan_spritesheet(path=path)
             surface: pygame.Surface = self.load_spritesheet(path=path)
             sheet_sprites: list     = self.load_sprites(surface=surface, tilesize=tilesize)
             sprites.update({spritesheet_name: sheet_sprites})
@@ -97,10 +99,20 @@ class EngineSprites():
             if pixel_colour == (0, 0, 255):
                 break
 
+        # Scan for green-pixel for on xy-axies (0,255,0) for normal index start position
+        for ii in range(y):
+            
+            for i in range(x - 1):
+                pixel_colour = spritesheet.getpixel(xy=(i, ii))
+                if pixel_colour == (0,255,0):
+                    print(i, ii)
+                    break
+
         spritesheet.close()
         tilesize:     tuple = (x+1, y+1)
-
-        return tilesize
+        normal_index: tuple = (ii,i)
+        print(normal_index)
+        return tilesize, normal_index
 
     def load_spritesheet(self, path:str):
         spritesheet_surface: pygame.image = pygame.image.load(path).convert_alpha()
