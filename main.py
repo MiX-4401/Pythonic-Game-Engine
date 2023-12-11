@@ -1,5 +1,3 @@
-#dsadsa
-
 import pygame, moderngl as mgl
 from Engine.main import EngineMain
 from graphics    import Graphics
