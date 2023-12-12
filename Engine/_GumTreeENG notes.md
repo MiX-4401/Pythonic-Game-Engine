@@ -5,9 +5,9 @@
 [] TODO:
 
 []  Lighting
-[]  -> Decide how to manage normal map files
-[]  -> Decide how to associate normal maps with sprites
-[]  -> Associate normal maps with sprites
+[x]  -> Decide how to manage normal map files
+[x]  -> Decide how to associate normal maps with sprites
+[x]  -> Associate normal maps with sprites
 []  -> Create new surface layers for normal maps
 
 []  Graphics

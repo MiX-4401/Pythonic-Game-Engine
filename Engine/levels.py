@@ -194,7 +194,7 @@ class EngineLevel():
 
                 level_id: int = firstgrid + int(tile) 
 
-                level_tiles.append({"id_": level_id, "surfaces": global_tiles[tile]["surfaces"], "properties": global_tiles[tile]["properties"]})
+                level_tiles.append({"id_": level_id, "surfaces": global_tiles[tile]["surfaces"], "normals": global_tiles[tile]["normals"], "properties": global_tiles[tile]["properties"]})
 
         return level_tiles
 
@@ -213,11 +213,12 @@ class EngineLevel():
                         if tiledata["id_"] == id_: tile = tiledata
                     
                     surfaces:   list  = tile["surfaces"]
+                    normals:    list  = tile["normals"]
                     properties: dict  = tile["properties"]
                     polygons:   None  = None # polygons:   None = tile["polygons"]
                     size:       tuple = surfaces[0].get_size() 
                     pos:        list  = [ii*size[0], i*size[1]]
-                    tile:       EngineBasicTile = EngineBasicTile(surfaces=surfaces, polygons=polygons, properties=properties, pos=pos)
+                    tile:       EngineBasicTile = EngineBasicTile(surfaces=surfaces, normals=normals, polygons=polygons, properties=properties, pos=pos)
                     
                     tiles.append(tile)
 

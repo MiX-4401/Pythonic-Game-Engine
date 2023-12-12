@@ -1,10 +1,12 @@
 import pygame, os
 from PIL import Image
 from inspect import getsourcefile
-from Engine.functions import scale_surface
+from math import ceil
+from Engine.functions import scale_surface, split_list
 
 class EngineSprites():
 
+    normal_colour: tuple = (50.2, 50.2, 100)
     def __init__(self, main, settings:dict={}):
         self.main = main
         self.settings: dict = settings
@@ -26,16 +28,33 @@ class EngineSprites():
         spritesheet_paths, spritesource_paths = self.get_paths(folders=self.settings["spritesheets"])
 
         # Load spritesheet surfaces
-        sprites: dict = {}
+        grouped_sprites: dict = {}
         for path in spritesheet_paths:
+
+            # Load spritesheet data
             spritesheet_name: str = os.path.basename(path).split(".")[0]
+            spritesheet: pygame.Surface = self.load_spritesheet(path=path) 
+            tilesize: tuple; has_normals: bool
+            tilesize, has_normals = self.scan_spritesheet(path=path); 
 
-            tilesize: tuple  = self.scan_spritesheet(path=path)
-            surface: pygame.Surface = self.load_spritesheet(path=path)
-            sheet_sprites: list     = self.load_sprites(surface=surface, tilesize=tilesize)
-            sprites.update({spritesheet_name: sheet_sprites})
+            # Load sprites
+            sprites: list; normals: list
+            sprites = self.load_sprites(surface=spritesheet, tilesize=tilesize)
+            
+            # Get normals (if any)
+            if has_normals:
+                # IF normals included, split sprites and normals from spritesheet
+                sprites, normals = split_list(my_list=sprites)
+            else:
+                # ELSE create empty normal surfaces for each sprite (using pointers)
+                normals = self.load_normals(sprites=sprites)              
 
-        self.sprites            = sprites
+            # Combine normals with the sprites
+            sprites: dict = self.attach_normals_with_sprites(sprites=sprites, normals=normals)
+
+            grouped_sprites[spritesheet_name] = sprites
+
+        self.sprites            = grouped_sprites
         self.spritesource_paths = spritesource_paths
         
     def get_backgrounds(self):
@@ -97,31 +116,33 @@ class EngineSprites():
             if pixel_colour == (0, 0, 255):
                 break
 
+        # Scan for green-pixel for on xy-axies (0,255,0) for normalchecks
+        has_normals: bool = True if spritesheet.getpixel(xy=(1,0)) == (0,255,0) else False
+
         spritesheet.close()
         tilesize:     tuple = (x+1, y+1)
 
-        return tilesize
+        return tilesize, has_normals
 
     def load_spritesheet(self, path:str):
-        spritesheet_surface: pygame.image = pygame.image.load(path).convert_alpha()
+        spritesheet_surface: pygame.image   = pygame.image.load(path).convert_alpha()
         return spritesheet_surface
     
     def load_sprites(self, surface:pygame.Surface, tilesize:int):
         
-        sprites: dict = {}
+        sprites: list = []
                 
         # Find num of iterations for sprite parsing
-        sheet_resolution = surface.get_size()
-        size_x = sheet_resolution[0] // tilesize[0]
-        size_y = sheet_resolution[1] // tilesize[1]
+        spritesheet_size = surface.get_size()
+        x_num_tiles = spritesheet_size[0] // tilesize[0]
+        y_num_tiles = spritesheet_size[1] // tilesize[1]
         
-        # Blits sections of spritesheets to new surfaces which are then scaled linearly 
-        counter: int = 0
-        y: int = 0
-        while y < size_y:
-            for x in range(size_x):
+        # Sprite segmenter loop
+        #
+        for y in range(y_num_tiles):
+            for x in range(x_num_tiles):
  
-                # Find rect area of which to crop spritesheets
+                # Find sprite position via corners
                 corners: tuple = ( 
                     x * tilesize[0],
                     y * tilesize[1],
@@ -129,16 +150,45 @@ class EngineSprites():
                     y * tilesize[1] + tilesize[1]
                 )
 
-                # Blit spritesheet sections to new surface; Then scale
+                # Load sprite
                 sprite: pygame.Surface = pygame.Surface(tilesize, pygame.SRCALPHA).convert_alpha()
                 sprite.blit(source=surface, dest=(0,0), area=corners)
                 sprite = scale_surface(surface=sprite, scale=self.main.global_settings["scale"])
-                sprites.update({str(counter): sprite})
-                counter += 1
-            y+=1
+                
+                sprites.append(sprite)
 
         return sprites
 
+    def load_normals(self, sprites:list):
+
+        options: dict = {}
+        normals: list = []
+        for sprite in sprites:
+
+            # Get sprite size
+            size: tuple = sprite.get_size()
+            key:  str = f"{size[0]}x{size[1]}"
+            
+            # Create new empty normal surface if size is not avaliable
+            if key not in options:
+                options[key] = pygame.Surface(size=size)
+                options[key].fill(EngineSprites.normal_colour)
+            
+            normals.append(options[key]) 
+        
+        return normals
+    
+    def attach_normals_with_sprites(self, sprites:list, normals:list):
+        
+        # Zip sprites and normals
+        grouped_list: list = zip(sprites, normals)
+        
+        # Set sprites into preffered format: {id_: (sprites, normal)}
+        sprites: dict = {}
+        for i,group in enumerate(grouped_list):
+            sprites[str(i)] = group
+        
+        return sprites
 
     def update(self):
         pass

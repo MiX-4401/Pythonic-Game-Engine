@@ -44,31 +44,35 @@ class EngineTiles():
 
     def group_sheet(self, sheetname:str, sheetdata:dict):
 
-        tiles: dict = {0: {"surfaces": [], "properties": sheetdata["1"]}} # {id: [{ "surface": pygame.Surface, "properties": {} }]} 
+        tiles: dict = {0: {"surfaces": [], "normals": [], "properties": sheetdata["1"]}} # {id: [{ "surface": pygame.Surface, "properties": {} }]} 
         for key in sheetdata: 
             if key == "0": continue
 
-            surface: pygame.Surface = self.get_surface(sheetname=sheetname, key=key)
+            surface: pygame.Surface; normal: pygame.Surface
+            surface, normal = self.get_surface(sheetname=sheetname, key=key)
             tiles[0]["surfaces"].append(surface)
+            tiles[0]["normals"].append(normal)
 
         return tiles
 
     def disperse_sheet(self, sheetname:str, sheetdata:dict):
-
+        
         tiles: dict = {} # {id: [{ "surface": pygame.Surface, "properties": {} }]}
         for key in sheetdata:
             if key == "0": continue
-            texture_surface: pygame.Surface
-            texture_surface = self.get_surface(sheetname=sheetname, key=key)
+
+            texture_surface: pygame.Surface; texture_normal: pygame.Surface
+            texture_surface, texture_normal = self.get_surface(sheetname=sheetname, key=key)
             surface: list = [texture_surface]
+            normal:  list = [texture_normal]
             properties: dict = sheetdata[key] 
             
-            tiles.update({key: {"surfaces": surface, "properties": properties}})
+            tiles.update({key: {"surfaces": surface, "normals": normal, "properties": properties}})
 
         return tiles
 
     def get_surface(self, sheetname:str, key:str):
-        return self.main.sprites.sprites[sheetname][key]
+        return self.main.sprites.sprites[sheetname][key][0], self.main.sprites.sprites[sheetname][key][1]
         
     def load_tiles(self):
         spritesource_paths: list = self.main.sprites.spritesource_paths
@@ -116,8 +120,9 @@ class EngineTiles():
 
 
 class EngineBasicTile():
-    def __init__(self, surfaces:list, polygons:list, properties:dict, pos:tuple):
+    def __init__(self, surfaces:list, normals:list, polygons:list, properties:dict, pos:tuple):
         self.surfaces:   list = surfaces
+        self.normals:    list = normals
         self.polygons:   None = polygons
         self.properties: dict = properties
         self.pos:        list = pos

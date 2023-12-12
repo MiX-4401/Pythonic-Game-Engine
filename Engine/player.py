@@ -2,10 +2,11 @@ import pygame
 
 
 class EnginePlayer():
-    def __init__(self, main, surfaces:list, properties:dict, polygons=list, pos=list, name=str, settings:dict={}):
+    def __init__(self, main, surfaces:list, normals:list, properties:dict, polygons=list, pos=list, name=str, settings:dict={}):
         self.main = main
         self.settings:   dict = settings
         self.surfaces:   list = surfaces
+        self.normals:    list = normals
         self.properties: dict = properties
         self.polygons:   list = polygons
         self.pos:        list = pos

@@ -1,9 +1,10 @@
 import pygame
 
 class Object():
-    def __init__(self, main, surfaces:list, properties:dict, polygons:list, pos:list, name:str):
+    def __init__(self, main, surfaces:list, normals:list, properties:dict, polygons:list, pos:list, name:str):
         self.main = main
         self.surfaces:   list = surfaces
+        self.normals:    list = normals
         self.properties: dict = properties
         self.polygons:   list = polygons 
         self.pos:        list = pos
