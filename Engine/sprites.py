@@ -1,8 +1,9 @@
-import pygame, os
+import os
 from PIL import Image
 from inspect import getsourcefile
 from math import ceil
-from Engine.functions import scale_surface, split_list
+from Engine.functions import split_list
+from Engine.graphics import Canvas, Texture
 
 class EngineSprites():
 

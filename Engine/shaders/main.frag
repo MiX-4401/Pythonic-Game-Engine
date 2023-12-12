@@ -4,7 +4,7 @@
 
 
 //Set uniforms
-uniform sampler2D tScene; 
+uniform sampler2D sourceTexture; 
 
 // Set ins-outs
 in vec2 uvs;
@@ -14,7 +14,7 @@ out vec4 fragColour;
 // Main vertex function
 //
 void main(){
-    vec4 iScene = texture(tScene, uvs).rgba;
+    vec4 sourceImage = texture(sourceTexture, uvs).rgba;
     
-    fragColour = vec4(iScene.rgb, iScene.a);
+    fragColour = vec4(sourceImage.rgb, sourceImage.a);
 }

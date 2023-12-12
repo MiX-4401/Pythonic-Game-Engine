@@ -1,144 +1,246 @@
-import moderngl as mgl, numpy as np
-import pygame, os
-from inspect import getsourcefile
+import moderngl as mgl
+import numpy as np
+from PIL import Image
+from typing import Union
 
-class EngineGraphics():
+class Texture:
+    ctx: mgl.Context     = None
+    program: mgl.Program = None
+    vao: mgl.VertexArray = None
 
-    def __init__(self, main, ctx, settings:dict={}):
-        self.main = main
-        self.ctx  = ctx
-        self.settings: dict = settings
-        self.surface:  pygame.Surface = pygame.Surface(main.native_resolution, pygame.SRCALPHA)
-
-        self.shader_paths: dict = {
-            "display": EngineGraphics.get_base_shaders()
-        }
-        self.load_shaders()
-
-        self.programs:      dict = {}
-        self.vertex_arrays: dict = {}
-        self.framebuffers:  dict = {}
-        self.buffers:       dict = {}
-        self.textures:      dict = {}
-
-        self.programs["main"]:      mgl.Program     = self.ctx.program(vertex_shader=self.load_shader(path=self.shader_paths["display"]["vert"]), fragment_shader=self.load_shader(path=self.shader_paths["display"]["frag"]))
-        self.buffers["main"]:       mgl.Buffer      = self.ctx.buffer(np.array([-1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, -1.0, 1.0, 1.0], dtype="f4")) 
-        self.vertex_arrays["main"]: mgl.VertexArray = self.ctx.vertex_array(self.programs["main"], [(self.buffers["main"], "2f 2f", "aPosition", "aTexCoord")])
-        self.textures["main"]:      mgl.Texture     = self.ctx.texture(size=main.native_resolution, components=4)
-
-    def load_shaders(self):
-        paths: dict = self.get_paths(self.settings["shaders"])
-        self.shader_paths.update(paths)
-
-    def get_paths(self, folders:str):
-        my_path: str = getsourcefile(self.__init__)
-
-        # Find directory to search #
-        basename: str = os.path.basename(my_path)
-        basedir:  str = os.path.abspath(my_path).split(basename)[0]
-
-        # Get spritesheet paths from directory
-        shader_paths: dict = {} # { <name>: {vert: <path>, <frag>: <path>} }
-        for rel_dir_path in folders:
-            abs_dir_path: str = os.path.join(basedir, rel_dir_path)
-
-            for filename in os.listdir(abs_dir_path):
-                abs_path: str = os.path.join(abs_dir_path, filename)
-
-                name: str; extension: str 
-                name, extension = filename.split(".")
-
-                # Create shader group if unique path is found
-                if name not in shader_paths: shader_paths[name] = {"vert": None, "frag": None}
-
-                # Add vertex and Fragment shader to shader group
-                if extension == "vert":
-                    shader_paths[name]["vert"] = abs_path
-                elif extension == "frag":
-                    shader_paths[name]["frag"] = abs_path
-
-        return shader_paths
-
-    def load_shader(self, path):
-        """
-        Loads the contents of a shader from file
-        """
-        with open(file=path, mode="r") as f:
-            return f.read()
-
-
-    def update(self):
-        self.textures["main"].write(self.main.screen.get_view("1"))
-        self.textures["main"].swizzle:  str = "BGRA"
-        self.textures["main"].filter: tuple = (mgl.NEAREST, mgl.NEAREST)
-
-    def draw(self):
-        self.textures["main"].use(location=0)
-        self.programs["main"]["tScene"] = 0
-        self.vertex_arrays["main"].render(mode=mgl.TRIANGLE_STRIP)
-
-
-    def garbage_collection(self):
-        self.programs["main"].release()
-        self.vertex_arrays["main"].release()
-        self.buffers["main"].release()
-        self.textures["main"].release()
-
-    @classmethod
-    def d_garbage_collection(cls, func):
-        def inner(self, *args, **kwargs):
-            
-            self.programs["main"].release()
-            self.vertex_arrays["main"].release()
-            self.buffers["main"].release()
-            self.textures["main"].release()
-
-            result = func(self, *args, **kwargs)
-
-            return result
-
-        return inner
-
-    @classmethod
-    def d_update(cls, func):
-        def inner(self, *args, **kwargs):
-            
-            result = func(self, *args, **kwargs)
-
-            self.textures["main"].write(self.surface.get_view("1"))
-            self.textures["main"].swizzle: str = "BGRA"
-            self.textures["main"].filter: tuple = (mgl.NEAREST, mgl.NEAREST)
-
-            return result
-
-        return inner
-    
-    @classmethod
-    def d_draw(cls, func):
-        def inner(self, *args, **kwargs):
-
-            result = func(self, *args, **kwargs)
-
-            self.textures["main"].use(location=0)
-            self.programs["main"]["tScene"] = 0
-            self.vertex_arrays["main"].render(mode=mgl.TRIANGLE_STRIP)
-
-            return result
-
-        return inner
-
-    @classmethod
-    def get_base_shaders(cls):
-        my_path: str = __file__.split(os.path.basename(__file__))[0]
-        my_dir:  str = f"{os.path.abspath(my_path)}\shaders"
-
-        shader_paths: dict = {"vert": None, "frag": None}
-        for x in os.listdir(f"{my_path}\shaders"):
-            if x == "display.frag":
-                shader_paths["frag"] = f"{my_dir}\{x}"
-            elif x == "display.vert":
-                shader_paths["vert"] = f"{my_dir}\{x}"
+    def __init__(self):
+        self.loaded: bool  = False
+        self.synced: bool  = True
+        self.size:   tuple = None
+        self.channels: int = None
+        self.texture:     mgl.Texture = None
+        self.framebuffer: mlg.Framebuffer = None
         
-        return shader_paths
 
+    def blit(self, source, pos:tuple=(0,0)):
+
+        ctx, program, vao = Texture.get_components() 
+
+        # Bind framebuffer and source texture
+        self.framebuffer.use()
+        
+        source.use(location=0)
+
+        # Set uniforms
+        program["sourceTexture"] = 0
+        program["pos"]           = (pos[0] + source.size[0] / 2, pos[1] + source.size[1] / 2)
+        program["textureSize"]   = self.size
+        Program["sourceSize"]    = self.source.size
+
+        # Render
+        vao.render(mode=mgl.TRIANGLE_STRIP)
+
+        # Unbind framebuffer
+        ctx.screen.use()
+        
+    def use(self, location:int=0):
+        self.texture.use(location=location)
+
+    def sync(self):
+        pass
+
+    def __str__(self):
+        return f"Texture Object {self.size[0]}x{self.size[1]} {self.channels}"
+
+    @classmethod
+    def init(cls, ctx:mgl.Context, program:mgl.Program, vao:mgl.VertexArray):
+        cls.ctx = ctx
+        cls.program = program
+        cls.vao = vao
+        
+    @classmethod
+    def get_components(cls) -> (mgl.Context, mgl.Program, mgl.VertexArray):
+        return cls.ctx, cls.program, cls.vao
+
+    @staticmethod
+    def load(path:str):
+        ctx, program, vao = Texture.get_components() 
+
+        image:   Image = Image.open(path).transpose(Image.FLIP_TOP_BOTTOM)
+        texture: Texture = Texture()
+        
+        texture.size:     tuple = image.size
+        texture.channels: int   = len(image.getbands())
+        texture.texture:  mgl.Texture = ctx.texture(size=texture.size, components=texture.channels, data=image.tobytes())
+        texture.filter:   tuple       = (mgl.NEAREST, mgl.NEAREST)
+        texture.framebuffer: mgl.Framebuffer = ctx.framebuffer(color_attachments=texture.texture)
+
+        texture.loaded = True
+
+        return texture
+
+    @staticmethod
+    def load_blank(size:tuple, channels:int=4):
+        ctx, program, vao = Texture.get_components() 
+
+        texture: Texture = Texture()
+        
+        texture.size:     tuple = size
+        texture.channels: int   = channels
+        texture.texture:  mgl.Texture = ctx.texture(size=size, components=channels)
+        texture.filter:   tuple       = (mgl.NEAREST, mgl.NEAREST)
+        texture.framebuffer: mgl.Framebuffer = ctx.framebuffer(color_attachments=texture.texture)
+
+        texture.loaded = True
+
+        return texture
+
+class Canvas:
+    ctx: mgl.Context     = None
+    program: mgl.Program = None
+    vao: mgl.VertexArray = None
+
+    def __init__(self):
+        self.loaded: bool  = False
+        self.synced: bool  = False
+        self.size:   tuple = None
+        self.channels: int = None
+        self.renderbuffer: mgl.Renderbuffer = None
+        self.framebuffer:  mgl.Framebuffer  = None
+        self.texture:      mgl.Texture      = None
+        
+
+    def blit(self, source, pos:tuple=(0,0)):
+
+        ctx, program, vao = Canvas.get_components() 
+
+        # Bind framebuffer and source texture
+        self.framebuffer.use()
+
+        source.use(location=0)
+
+        # Set uniforms
+        program["sourceTexture"] = 0
+        program["pos"]           = (pos[0] + source.size[0] / 2, pos[1] + source.size[1] / 2)
+        program["textureSize"]   = self.size
+        program["sourceSize"]    = source.size
+
+        # Render
+        vao.render(mode=mgl.TRIANGLE_STRIP)
+
+        self.synced = False
+
+        # Unbind framebuffer
+        ctx.screen.use()
+
+    def fill(self, colour:tuple=(0,0,0)):
+        colour: tuple = tuple([c/225 for c in colour])
+        self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=1.0)
+        self.synced = False
+
+    def clear(self):
+        self.framebuffer.clear(red=0.0, green=0.0, blue=0.0, alpha=1.0)
+        self.synced = False
+
+    def use(self, location:int=0):
+        self.sync()
+        self.texture.use(location=location)
+
+    def sync(self):
+        if not self.synced:
+            self.texture.write(data=self.framebuffer.read(components=self.channels, attachment=0))
+            self.synced = True
+
+    def __str__(self):
+        return f"Canvas Object {self.size[0]}x{self.size[1]} {self.channels}"
+
+    @classmethod
+    def init(cls, ctx:mgl.Context, program:mgl.Program, vao:mgl.VertexArray):
+        cls.ctx = ctx
+        cls.program = program
+        cls.vao = vao
+        
+    @classmethod
+    def get_components(cls) -> (mgl.Context, mgl.Program, mgl.VertexArray):
+        return cls.ctx, cls.program, cls.vao
+
+    @staticmethod
+    def load(size:tuple, channels:int=4):
+        ctx, program, vao = Canvas.get_components() 
+
+        canvas: Canvas = Canvas()
+        canvas.size:   tuple = size
+        canvas.channels: int = channels
+        canvas.renderbuffer: mgl.Renderbuffer = ctx.renderbuffer(size=canvas.size, components=canvas.channels)
+        canvas.framebuffer:  mgl.Framebuffer  = ctx.framebuffer(color_attachments=canvas.renderbuffer)
+        canvas.texture:      mgl.Texture      = ctx.texture(size=canvas.size, components=canvas.channels)
+        canvas.texture.filter: tuple          = (mgl.NEAREST, mgl.NEAREST)
+        
+        canvas.loaded = True
+
+        return canvas
+
+class Transform:
     
+    ctx: mgl.Context = None
+    programs: dict   = None
+    vaos:     dict   = None
+
+    @staticmethod
+    def scale(surface:Union[Texture, Canvas], size:tuple) -> Union[Texture, Canvas]:
+        ctx, programs, vaos = Transform.get_components()
+        
+        if type(surface) == Texture:
+            scaled_surface: Texture = Texture.load_blank(size=size, channels=surface.channels)
+        elif type(surface) == Canvas:
+            scaled_surface: Canvas = Canvas.load(size=size, channels=surface.channels)
+
+        # Bind framebuffer and source texture
+        scaled_surface.framebuffer.use()
+        surface.use(location=0)
+
+        # Set uniforms
+        programs["scale"]["sourceTexture"] = 0
+
+        # Render
+        vaos["scale"].render(mgl.TRIANGLE_STRIP)
+
+        scaled_surface.synced = False
+
+        # Unbind
+        ctx.screen.use()
+
+        return scaled_surface
+
+    @staticmethod
+    def flip(surface:Union[Texture, Canvas], x_flip:bool=False, y_flip:bool=False) -> Union[Texture, Canvas]:
+        ctx, programs, vaos = Transform.get_components()
+        
+        if type(surface) == Texture:
+            new_surface: Texture = Texture.load_blank(size=surface.size, channels=surface.channels)
+        elif type(surface) == Canvas:
+            new_surface: Canvas = Canvas.load(size=surface.size, channels=surface.channels)
+
+        # Bind framebuffer and source texture
+        new_surface.framebuffer.use()
+        surface.use(location=0)
+
+        # Set uniforms
+        programs["flip"]["xFlip"] = x_flip
+        programs["flip"]["yFlip"] = y_flip
+
+        # Render
+        vaos["flip"].render(mgl.TRIANGLE_STRIP)
+
+        new_surface.synced = False
+
+        # Unbind
+        ctx.screen.use()
+
+        return new_surface
+
+    @classmethod
+    def init(cls, ctx:mgl.Context, programs:list, vaos:list):
+        cls.ctx = ctx
+        cls.programs = programs
+        cls.vaos = vaos
+     
+    @classmethod
+    def get_components(cls):
+        return cls.ctx, cls.programs, cls.vaos
+

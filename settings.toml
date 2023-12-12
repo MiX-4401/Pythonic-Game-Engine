@@ -5,8 +5,9 @@ title = "Project_1"
 native_resolution = [1280, 720]
 scale = 2
 
-[graphics]
+[shaders]
 shaders = [
+    "Engine\\shaders",
     "assets\\shaders"
 ]
 
