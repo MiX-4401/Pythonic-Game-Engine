@@ -1,5 +1,5 @@
-import pygame
 import xml.etree.ElementTree as XML
+from Engine.graphics import Texture, Canvas
 
 class EngineTiles():
     def __init__(self, main, settings:dict={}):
@@ -44,11 +44,11 @@ class EngineTiles():
 
     def group_sheet(self, sheetname:str, sheetdata:dict):
 
-        tiles: dict = {0: {"surfaces": [], "normals": [], "properties": sheetdata["1"]}} # {id: [{ "surface": pygame.Surface, "properties": {} }]} 
+        tiles: dict = {0: {"surfaces": [], "normals": [], "properties": sheetdata["1"]}} # {id: [{ "surface": Texture, "properties": {} }]} 
         for key in sheetdata: 
             if key == "0": continue
 
-            surface: pygame.Surface; normal: pygame.Surface
+            surface: Texture; normal: Texture
             surface, normal = self.get_surface(sheetname=sheetname, key=key)
             tiles[0]["surfaces"].append(surface)
             tiles[0]["normals"].append(normal)
@@ -57,11 +57,11 @@ class EngineTiles():
 
     def disperse_sheet(self, sheetname:str, sheetdata:dict):
         
-        tiles: dict = {} # {id: [{ "surface": pygame.Surface, "properties": {} }]}
+        tiles: dict = {} # {id: [{ "surface": Texture, "properties": {} }]}
         for key in sheetdata:
             if key == "0": continue
 
-            texture_surface: pygame.Surface; texture_normal: pygame.Surface
+            texture_surface: Texture; texture_normal: Texture
             texture_surface, texture_normal = self.get_surface(sheetname=sheetname, key=key)
             surface: list = [texture_surface]
             normal:  list = [texture_normal]
@@ -130,7 +130,7 @@ class EngineBasicTile():
         self.is_animating:   bool  = False 
         self.current_sprite: int   = 0
         self.sprite_inc:     float = 0
-        self.image: pygame.Surface = self.surfaces[self.current_sprite]
+        self.image: Texture  = self.surfaces[self.current_sprite]
 
         self.animate()
 
@@ -149,5 +149,5 @@ class EngineBasicTile():
             if self.current_sprite >= len(self.surfaces): self.current_sprite = 0
             self.image = self.surfaces[int(self.current_sprite)]
 
-    def draw(self, surface:pygame.Surface):
+    def draw(self, surface:Canvas):
         surface.blit(source=self.surfaces[0], dest=self.pos)

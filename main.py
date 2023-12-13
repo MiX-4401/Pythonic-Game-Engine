@@ -14,18 +14,14 @@ class Main(EngineMain):
         super().__init__()
         pygame.init()
         
-        self.player:  Player  = None # The player class is initialised when the correct level objectgroup (layer) is created 
-        self.shaders: Shaders = Shaders(main=self, ctx=self.ctx, settings=self.settings["shaders"])
-        self.canvas:  Canvas  = Canvas.load(size=self.native_resolution)
-        self.sprites: Sprites = Sprites(main=self, settings=self.settings["sprites"])
-        # self.tiles:    Tiles    = Tiles(main=self)
-        # self.renderer: Renderer = Renderer(main=self)
+        self.player:   Player   = None # The player class is initialised when the correct level objectgroup (layer) is created 
+        self.shaders:  Shaders  = Shaders(main=self, ctx=self.ctx, settings=self.settings["shaders"])
+        self.canvas:   Canvas   = Canvas.load(size=self.native_resolution)
+        self.sprites:  Sprites  = Sprites(main=self, settings=self.settings["sprites"])
+        self.tiles:    Tiles    = Tiles(main=self)
+        self.renderer: Renderer = Renderer(main=self)
         # self.levels:   Levels   = Levels(main=self, settings=self.settings["levels"])
         # self.camera:   Camera   = Camera(main=self, fixed_upon=self.player, settings=self.settings["camera"])
-
-        print([x for x in self.sprites.sprites.keys()])
-        print(self.sprites.sprites["tiles_0"])
-        self.canvas.blit(source=self.sprites.sprites["tiles_0"]["0"][0])
 
         
 
@@ -37,7 +33,7 @@ class Main(EngineMain):
 
     def draw(self):
         
-        # self.canvas.clear()
+        self.canvas.clear()
         # self.canvas.fill(colour=(25,255,255))
 
         self.ctx.screen.use()
