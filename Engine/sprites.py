@@ -3,7 +3,7 @@ from PIL import Image
 from inspect import getsourcefile
 from math import ceil
 from Engine.functions import split_list
-from Engine.graphics import Canvas, Texture
+from Engine.graphics import Canvas, Texture, Transform
 
 class EngineSprites():
 
@@ -34,7 +34,7 @@ class EngineSprites():
 
             # Load spritesheet data
             spritesheet_name: str = os.path.basename(path).split(".")[0]
-            spritesheet: pygame.Surface = self.load_spritesheet(path=path) 
+            spritesheet: Texture = self.load_spritesheet(path=path) 
             tilesize: tuple; has_normals: bool
             tilesize, has_normals = self.scan_spritesheet(path=path); 
 
@@ -126,15 +126,15 @@ class EngineSprites():
         return tilesize, has_normals
 
     def load_spritesheet(self, path:str):
-        spritesheet_surface: pygame.image   = pygame.image.load(path).convert_alpha()
+        spritesheet_surface: Texture = Texture.load(path=path)
         return spritesheet_surface
     
-    def load_sprites(self, surface:pygame.Surface, tilesize:int):
+    def load_sprites(self, surface:Texture, tilesize:int):
         
         sprites: list = []
                 
         # Find num of iterations for sprite parsing
-        spritesheet_size = surface.get_size()
+        spritesheet_size = surface.size
         x_num_tiles = spritesheet_size[0] // tilesize[0]
         y_num_tiles = spritesheet_size[1] // tilesize[1]
         
@@ -143,18 +143,10 @@ class EngineSprites():
         for y in range(y_num_tiles):
             for x in range(x_num_tiles):
  
-                # Find sprite position via corners
-                corners: tuple = ( 
-                    x * tilesize[0],
-                    y * tilesize[1],
-                    x * tilesize[0] + tilesize[0],
-                    y * tilesize[1] + tilesize[1]
-                )
-
                 # Load sprite
-                sprite: pygame.Surface = pygame.Surface(tilesize, pygame.SRCALPHA).convert_alpha()
-                sprite.blit(source=surface, dest=(0,0), area=corners)
-                sprite = scale_surface(surface=sprite, scale=self.main.global_settings["scale"])
+                sprite: Texture = Texture.load_blank(tilesize)
+                sprite.blit(source=surface, pos=(0,0), area=(x * tilesize[0], y * tilesize[1], tilesize[0], tilesize[1]))
+                sprite: Texture = Transform.scale(surface=sprite, size=(tilesize[0]* self.main.global_settings["scale"], tilesize[1] * self.main.global_settings["scale"]))
                 
                 sprites.append(sprite)
 
@@ -167,13 +159,13 @@ class EngineSprites():
         for sprite in sprites:
 
             # Get sprite size
-            size: tuple = sprite.get_size()
+            size: tuple = sprite.size
             key:  str = f"{size[0]}x{size[1]}"
             
             # Create new empty normal surface if size is not avaliable
             if key not in options:
-                options[key] = pygame.Surface(size=size)
-                options[key].fill(EngineSprites.normal_colour)
+                options[key] = Texture.load_blank(size=size)
+                options[key].fill(colour=EngineSprites.normal_colour)
             
             normals.append(options[key]) 
         
