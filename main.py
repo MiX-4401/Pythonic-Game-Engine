@@ -23,6 +23,10 @@ class Main(EngineMain):
         # self.levels:   Levels   = Levels(main=self, settings=self.settings["levels"])
         # self.camera:   Camera   = Camera(main=self, fixed_upon=self.player, settings=self.settings["camera"])
 
+        print([x for x in self.sprites.sprites.keys()])
+        print(self.sprites.sprites["tiles_0"])
+        self.canvas.blit(source=self.sprites.sprites["tiles_0"]["0"][0])
+
         
 
     @EngineMain.d_update
@@ -33,8 +37,8 @@ class Main(EngineMain):
 
     def draw(self):
         
-        self.canvas.clear()
-        self.canvas.fill(colour=(25,255,255))
+        # self.canvas.clear()
+        # self.canvas.fill(colour=(25,255,255))
 
         self.ctx.screen.use()
         self.canvas.use(location=1)
