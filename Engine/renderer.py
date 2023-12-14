@@ -64,8 +64,8 @@ class EngineRenderer():
             layer:   dict  = self.canvases[key]
             canvas: Canvas = layer["canvas"]
             pos:     tuple = layer["pos"]
-            # frame.blit(source=canvas, dest=pos, area=self.main.camera.camera)
-            frame.blit(source=canvas, pos=pos)
+            frame.blit(source=canvas, pos=(-self.main.camera.camera[0],-self.main.camera.camera[1]), area=(0,0,self.main.native_resolution[0],self.main.native_resolution[1]))
+            # frame.blit(source=canvas, pos=pos)
 
 
     @classmethod
@@ -87,8 +87,8 @@ class EngineRenderer():
                 layer:   dict  = self.canvases[key]
                 Canvas: Canvas = layer["canvas"]
                 pos:     tuple = layer["pos"]
-                # kwargs["frame"].blit(source=canvas, dest=pos, area=self.main.camera.camera)
-                kwargs["frame"].blit(source=canvas, dest=pos)
+                kwargs["frame"].blit(source=canvas, dest=(self.main.camera.camera[0],self.main.camera.camera[1]), area=self.main.camera.camera)
+                # kwargs["frame"].blit(source=canvas, dest=pos)
             
             result = func(self, *args, **kwargs)
 

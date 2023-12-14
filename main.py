@@ -22,7 +22,7 @@ class Main(EngineMain):
         self.tiles:    Tiles    = Tiles(main=self)
         self.renderer: Renderer = Renderer(main=self)
         self.levels:   Levels   = Levels(main=self, settings=self.settings["levels"])
-        # self.camera:   Camera   = Camera(main=self, fixed_upon=self.player, settings=self.settings["camera"])
+        self.camera:   Camera   = Camera(main=self, fixed_upon=self.player, settings=self.settings["camera"])
 
         
 
@@ -30,7 +30,7 @@ class Main(EngineMain):
     def update(self):
         pygame.display.set_caption(title=f"GumTreeGraphicsEng {int(self.clock.get_fps())}")
         self.levels.update()
-        # self.camera.update()
+        self.camera.update()
 
     def draw(self):
         
