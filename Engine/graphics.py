@@ -39,10 +39,11 @@ class Texture:
         # Unbind framebuffer
         ctx.screen.use()
         
-    def fill(self, colour:tuple=(0,0,0)):
+    def fill(self, colour:tuple=(0,0,0,0)):
         colour: tuple = tuple([c/225 for c in colour])
-        self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=1.0)
+        self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=colour[3])
         self.synced = False
+
 
 
     def use(self, location:int=0):
@@ -136,9 +137,9 @@ class Canvas:
         # Unbind framebuffer
         ctx.screen.use()
 
-    def fill(self, colour:tuple=(0,0,0)):
+    def fill(self, colour:tuple=(0,0,0,0)):
         colour: tuple = tuple([c/225 for c in colour])
-        self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=1.0)
+        self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=colour[3])
         self.synced = False
 
     def clear(self):

@@ -345,8 +345,8 @@ class EngineLevel():
                 for image in self.images[i]:   image.update()
 
     def draw(self):
-
-        self.draw_dynamic()
+        pass
+        # self.draw_dynamic()
             
 
     @classmethod

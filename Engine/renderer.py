@@ -40,16 +40,14 @@ class EngineRenderer():
             layer: dict = self.normals[key]
             layer["canvas"].blit(source=canvas, dest=(0,0))
             
-
     def reset_layer(self, key:int, location:str="canvases"):
         if location == "canvases":
             layer: dict = self.canvases[key]
-            layer["canvas"].fill(color=(0,0,0))
+            layer["canvas"].fill(colour=(0,0,0,0))
         elif location == "normals":
             layer: dict = self.normals[key]
-            layer["canvas"].fill(color=(0,0,0))
+            layer["canvas"].fill(colour=(0,0,0,0))
             
-
     def clear_surfaces(self, location:str="canvases"):
         if location == "canvases":
             self.canvases = {}

@@ -7,7 +7,7 @@ from Engine.graphics import Canvas, Texture, Transform
 
 class EngineSprites():
 
-    normal_colour: tuple = (50.2, 50.2, 100)
+    normal_colour: tuple = (50.2, 50.2, 100, 225)
     def __init__(self, main, settings:dict={}):
         self.main = main
         self.settings: dict = settings

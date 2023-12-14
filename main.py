@@ -36,8 +36,11 @@ class Main(EngineMain):
         
         self.canvas.clear()
         self.levels.draw()
-        self.renderer.draw(frame=self.canvas,        location="canvases")
-        self.renderer.draw(frame=self.normal_canvas, location="normals")
+        self.canvas.blit(source=self.renderer.canvases[0]["canvas"])
+        # self.renderer.draw(frame=self.canvas, location="canvases")
+        # self.renderer.draw(frame=self.normal_canvas, location="normals")
+        # print(self.renderer.canvases)
+        # self.canvas.blit(source=self.renderer.canvases[2]["canvas"])
 
         self.ctx.screen.use()
         self.canvas.use(location=1)
