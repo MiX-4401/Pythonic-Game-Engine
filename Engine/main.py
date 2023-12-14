@@ -19,6 +19,7 @@ class EngineMain:
         self.screen = pygame.display.set_mode(self.native_resolution, pygame.DOUBLEBUF | pygame.OPENGL | pygame.RESIZABLE | pygame.SRCALPHA)
         self.ctx: mgl.Context = mgl.create_context()
         pygame.display.set_caption(self.global_settings["title"])
+        self.ctx.enable(mgl.BLEND)
 
 
     def load_settings(self):
