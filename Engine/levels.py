@@ -289,45 +289,45 @@ class EngineLevel():
         # Draw images -> tiles -> objects
         for i in range(len(self.layers)):
             
-            layer: dict = self.main.renderer.surfaces[i]
+            layer: dict = self.main.renderer.canvases[i]
 
             if layer["static"]: continue
 
-            layer["surface"].fill(color=(0,0,0,0))
+            layer["canvas"].fill(color=(0,0,0,0))
 
             if i in self.images:
                 images:  list = self.images[i]
-                for image in images:   image.draw(surface=layer["surface"])
+                for image in images: image.draw(surface=layer["canvas"])
             
             if i in self.tiles:
                 tiles:   list = self.tiles[i]
-                for tile in tiles:     tile.draw(surface=layer["surface"])
+                for tile in tiles: tile.draw(surface=layer["canvas"])
             
             if i in self.objects:
                 objects: list = self.objects[i]
-                for object in objects: object.draw(surface=layer["surface"])
+                for object in objects: object.draw(surface=layer["canvas"])
 
     def draw_static(self):
         # Draw images -> tiles -> objects
         for i in range(len(self.layers)):
             
-            layer: dict = self.main.renderer.surfaces[i]
+            layer: dict = self.main.renderer.canvases[i]
 
             if not layer["static"]: continue
 
-            layer["surface"].fill(color=(0,0,0,0))
+            layer["canvas"].fill(color=(0,0,0,0))
 
             if i in self.images:
                 images:  list = self.images[i]
-                for image in images:   image.draw(surface=layer["surface"])
+                for image in images:   image.draw(surface=layer["canvas"])
             
             if i in self.tiles:
                 tiles:   list = self.tiles[i]
-                for tile in tiles:     tile.draw(surface=layer["surface"])
+                for tile in tiles:     tile.draw(surface=layer["canvas"])
             
             if i in self.objects:
                 objects: list = self.objects[i]
-                for object in objects: object.draw(surface=layer["surface"])
+                for object in objects: object.draw(surface=layer["canvas"])
 
 
     def update(self):

@@ -20,7 +20,7 @@ class Main(EngineMain):
         self.sprites:  Sprites  = Sprites(main=self, settings=self.settings["sprites"])
         self.tiles:    Tiles    = Tiles(main=self)
         self.renderer: Renderer = Renderer(main=self)
-        # self.levels:   Levels   = Levels(main=self, settings=self.settings["levels"])
+        self.levels:   Levels   = Levels(main=self, settings=self.settings["levels"])
         # self.camera:   Camera   = Camera(main=self, fixed_upon=self.player, settings=self.settings["camera"])
 
         
@@ -28,21 +28,19 @@ class Main(EngineMain):
     @EngineMain.d_update
     def update(self):
         pygame.display.set_caption(title=f"GumTreeGraphicsEng {int(self.clock.get_fps())}")
-        # self.levels.update()
+        self.levels.update()
         # self.camera.update()
 
     def draw(self):
         
         self.canvas.clear()
-        # self.canvas.fill(colour=(25,255,255))
+        self.levels.draw()
 
         self.ctx.screen.use()
         self.canvas.use(location=1)
         self.shaders.programs["main"]["sourceTexture"] = 1        
         self.shaders.vaos["main"].render(mgl.TRIANGLE_STRIP)
         
-        # self.levels.draw()
-
         pygame.display.flip()
 
     @EngineMain.d_garbage_collection
