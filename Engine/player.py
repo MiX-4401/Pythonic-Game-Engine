@@ -55,7 +55,7 @@ class EnginePlayer():
         self.animate()
 
     def draw(self, surface:pygame.Surface):
-        surface.blit(source=self.image, dest=self.pos)
+        surface.blit(source=self.image, pos=self.pos)
         
 
     @classmethod

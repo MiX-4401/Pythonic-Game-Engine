@@ -216,7 +216,7 @@ class EngineLevel():
                     normals:    list  = tile["normals"]
                     properties: dict  = tile["properties"]
                     polygons:   None  = None # polygons:   None = tile["polygons"]
-                    size:       tuple = surfaces[0].get_size() 
+                    size:       tuple = surfaces[0].size
                     pos:        list  = [ii*size[0], i*size[1]]
                     tile:       EngineBasicTile = EngineBasicTile(surfaces=surfaces, normals=normals, polygons=polygons, properties=properties, pos=pos)
                     
@@ -293,7 +293,7 @@ class EngineLevel():
 
             if layer["static"]: continue
 
-            layer["canvas"].fill(color=(0,0,0,0))
+            layer["canvas"].fill(colour=(0,0,0,0))
 
             if i in self.images:
                 images:  list = self.images[i]
@@ -315,7 +315,7 @@ class EngineLevel():
 
             if not layer["static"]: continue
 
-            layer["canvas"].fill(color=(0,0,0,0))
+            layer["canvas"].fill(colour=(0,0,0,0))
 
             if i in self.images:
                 images:  list = self.images[i]

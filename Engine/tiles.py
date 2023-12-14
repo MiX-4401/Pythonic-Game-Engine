@@ -150,4 +150,4 @@ class EngineBasicTile():
             self.image = self.surfaces[int(self.current_sprite)]
 
     def draw(self, surface:Canvas):
-        surface.blit(source=self.surfaces[0], dest=self.pos)
+        surface.blit(source=self.surfaces[0], pos=self.pos)

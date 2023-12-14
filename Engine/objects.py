@@ -33,6 +33,6 @@ class Object():
             self.image = self.surfaces[int(self.current_sprite)]
 
     def draw(self, surface:pygame.Surface):
-        surface.blit(source=self.image, dest=self.pos)
+        surface.blit(source=self.image, pos=self.pos)
         
 

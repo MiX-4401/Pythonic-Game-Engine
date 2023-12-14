@@ -12,16 +12,16 @@ class EngineRenderer():
 
 
     def register_layer(self, key:int, size:tuple=(1000,1000), static:bool=True, pos:tuple=(0, 0), location:str="canvases"):
-        canvas: Canvas = Canvas(size=size)
+        canvas: Canvas = Canvas.load(size=size)
         
         if location == "canvases":
-            self.surfaces[key]: dict = {
+            self.canvases[key]: dict = {
                 "canvas":  canvas,
                 "pos":     pos,
                 "static":  static
             }
         elif location == "normals":
-            self.surfaces[key]: dict = {
+            self.canvases[key]: dict = {
                 "canvas":  canvas,
                 "pos":     pos,
                 "static":  static
@@ -67,7 +67,7 @@ class EngineRenderer():
             canvas: Canvas = layer["canvas"]
             pos:     tuple = layer["pos"]
             # frame.blit(source=canvas, dest=pos, area=self.main.camera.camera)
-            frame.blit(source=canvas, dest=pos)
+            frame.blit(source=canvas, pos=pos)
 
 
     @classmethod

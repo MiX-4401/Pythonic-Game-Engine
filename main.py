@@ -35,6 +35,8 @@ class Main(EngineMain):
         
         self.canvas.clear()
         self.levels.draw()
+        self.renderer.draw(frame=self.renderer.canvases,      location="canvases")
+        self.renderer.draw(frame=self.renderer.normal_canvas, location="normals")
 
         self.ctx.screen.use()
         self.canvas.use(location=1)
