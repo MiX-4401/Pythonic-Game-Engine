@@ -17,6 +17,7 @@ class Main(EngineMain):
         self.player:   Player   = None # The player class is initialised when the correct level objectgroup (layer) is created 
         self.shaders:  Shaders  = Shaders(main=self, ctx=self.ctx, settings=self.settings["shaders"])
         self.canvas:   Canvas   = Canvas.load(size=self.native_resolution)
+        self.normal_canvas: Canvas = Canvas.load(size=self.native_resolution)
         self.sprites:  Sprites  = Sprites(main=self, settings=self.settings["sprites"])
         self.tiles:    Tiles    = Tiles(main=self)
         self.renderer: Renderer = Renderer(main=self)
@@ -35,8 +36,8 @@ class Main(EngineMain):
         
         self.canvas.clear()
         self.levels.draw()
-        self.renderer.draw(frame=self.renderer.canvases,      location="canvases")
-        self.renderer.draw(frame=self.renderer.normal_canvas, location="normals")
+        self.renderer.draw(frame=self.canvas,        location="canvases")
+        self.renderer.draw(frame=self.normal_canvas, location="normals")
 
         self.ctx.screen.use()
         self.canvas.use(location=1)
