@@ -146,7 +146,7 @@ class EngineSprites():
                 # Load sprite
                 sprite: Texture = Texture.load_blank(tilesize)
                 sprite.blit(source=surface, pos=(-x * tilesize[0], -y * tilesize[1]), area=(0, 0, tilesize[0], tilesize[1]))
-                sprite: Texture = Transform.scale(surface=sprite, size=(tilesize[0]* self.main.global_settings["scale"], tilesize[1] * self.main.global_settings["scale"]))
+                sprite: Texture = Transform.scale(source=sprite, size=(tilesize[0]* self.main.global_settings["scale"], tilesize[1] * self.main.global_settings["scale"]))
                 
                 sprites.append(sprite)
 

@@ -75,7 +75,7 @@ class Texture:
         texture.size:     tuple = image.size
         texture.channels: int   = len(image.getbands())
         texture.texture:  mgl.Texture = ctx.texture(size=texture.size, components=texture.channels, data=image.tobytes())
-        texture.filter:   tuple       = (mgl.NEAREST, mgl.NEAREST)
+        texture.texture.filter: tuple = (mgl.NEAREST, mgl.NEAREST)
         texture.framebuffer: mgl.Framebuffer = ctx.framebuffer(color_attachments=texture.texture)
 
         texture.loaded = True
@@ -91,7 +91,7 @@ class Texture:
         texture.size:     tuple = size
         texture.channels: int   = channels
         texture.texture:  mgl.Texture = ctx.texture(size=size, components=channels)
-        texture.filter:   tuple       = (mgl.NEAREST, mgl.NEAREST)
+        texture.texture.filter: tuple = (mgl.NEAREST, mgl.NEAREST)
         texture.framebuffer: mgl.Framebuffer = ctx.framebuffer(color_attachments=texture.texture)
 
         texture.loaded = True
@@ -191,17 +191,17 @@ class Transform:
     vaos:     dict   = None
 
     @staticmethod
-    def scale(surface:Union[Texture, Canvas], size:tuple) -> Union[Texture, Canvas]:
+    def scale(source:Union[Texture, Canvas], size:tuple) -> Union[Texture, Canvas]:
         ctx, programs, vaos = Transform.get_components()
         
-        if type(surface) == Texture:
-            scaled_surface: Texture = Texture.load_blank(size=size, channels=surface.channels)
-        elif type(surface) == Canvas:
-            scaled_surface: Canvas = Canvas.load(size=size, channels=surface.channels)
+        if type(source) == Texture:
+            scaled_surface: Texture = Texture.load_blank(size=size, channels=source.channels)
+        elif type(source) == Canvas:
+            scaled_surface: Canvas = Canvas.load(size=size, channels=source.channels)
 
         # Bind framebuffer and source texture
         scaled_surface.framebuffer.use()
-        surface.use(location=0)
+        source.use(location=0)
 
         # Set uniforms
         programs["scale"]["sourceTexture"] = 0
@@ -217,17 +217,17 @@ class Transform:
         return scaled_surface
 
     @staticmethod
-    def flip(surface:Union[Texture, Canvas], x_flip:bool=False, y_flip:bool=False) -> Union[Texture, Canvas]:
+    def flip(source:Union[Texture, Canvas], x_flip:bool=False, y_flip:bool=False) -> Union[Texture, Canvas]:
         ctx, programs, vaos = Transform.get_components()
         
-        if type(surface) == Texture:
-            new_surface: Texture = Texture.load_blank(size=surface.size, channels=surface.channels)
-        elif type(surface) == Canvas:
-            new_surface: Canvas = Canvas.load(size=surface.size, channels=surface.channels)
+        if type(source) == Texture:
+            new_surface: Texture = Texture.load_blank(size=source.size, channels=source.channels)
+        elif type(source) == Canvas:
+            new_surface: Canvas = Canvas.load(size=source.size, channels=source.channels)
 
         # Bind framebuffer and source texture
         new_surface.framebuffer.use()
-        surface.use(location=0)
+        source.use(location=0)
 
         # Set uniforms
         programs["flip"]["xFlip"] = x_flip
