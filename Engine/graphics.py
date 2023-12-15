@@ -36,6 +36,8 @@ class Texture:
         # Render
         vao.render(mode=mgl.TRIANGLE_STRIP)
 
+        self.synced: bool = False
+
         # Unbind framebuffer
         ctx.screen.use()
         
@@ -44,7 +46,25 @@ class Texture:
         self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=colour[3])
         self.synced = False
 
+    def shader(self, program:mgl.Program, vao:mgl.VertexArray, uniforms:dict={}):
+        dctx, dprogram, dvao = Texture.get_components()
 
+        # Bind framebuffer and source texture
+        self.framebuffer.use()
+        self.use(location=0)
+        program["myTexture"] = 0
+        
+        # Set uniforms
+        for key in uniforms:
+            program[key] = uniforms[key]
+
+        # Render
+        vao.render(mode=mgl.TRIANGLE_STRIP)
+        
+        self.synced: bool = False
+
+        # Unbind framebuffer
+        dctx.screen.use()
 
     def use(self, location:int=0):
         self.texture.use(location=location)
@@ -141,6 +161,28 @@ class Canvas:
         colour: tuple = tuple([c/225 for c in colour])
         self.framebuffer.clear(red=colour[0], green=colour[1], blue=colour[2], alpha=colour[3])
         self.synced = False
+
+    def shader(self, program:mgl.Program, vao:mgl.VertexArray, uniforms:dict={}):
+
+        dctx, dprogram, dvao = Canvas.get_components()
+
+        # Bind framebuffer and source texture
+        self.framebuffer.use()
+        self.use(location=0)
+        program["myTexture"] = 0
+        
+        # Set uniforms
+        for key in uniforms:
+            program[key] = uniforms[key]
+
+        # Render
+        vao.render(mode=mgl.TRIANGLE_STRIP)
+        
+        self.synced: bool = False
+
+        # Unbind framebuffer
+        dctx.screen.use()
+
 
     def clear(self):
         self.framebuffer.clear(red=0.0, green=0.0, blue=0.0, alpha=1.0)
